@@ -7,31 +7,37 @@
     <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
     <style>
     .mixpanel-platform-select.event_selector_theme {
-        max-width: 51px;
-      }
+      max-width: 51px;
+    }
+    .blank {
+      color: #f0f2f6;
+    }
     </style>
   </head>
   <body class="mixpanel-platform-body">
-    <div class="mixpanel-platform-section">
+    <div class="mixpanel-platform-section" style='width:919px'>
       <table style='width:919px'>
         <tr>
           <td width='150' style='text-align:right'>Event:</td>
-          <td width='50'>.</td>
+          <td width='50' class='blank'>.</td>
           <td><div id="eventSelect" style="float: left;"></div></td>
         </tr>
+        <tr><td colspan='3' class='blank'>.</td></tr>
         <tr>
           <td style='text-align:right'>Grouping:</td>
-          <td width='50'>.</td>
+          <td width='50' class='blank'>.</td>
           <td><div id="propSelect" style="float: left;"></div></td>
         </tr>
+        <tr><td colspan='3' class='blank'>.</td></tr>
         <tr>
           <td style='text-align:right'>Number of Days:</td>
-          <td width='50'>.</td>
+          <td width='50' class='blank'>.</td>
           <td><div id="num_days" style="float: left;"></div></td>
         </tr>
+        <tr><td colspan='3' class='blank'>.</td></tr>
         <tr>
           <td style='text-align:right'>Date Range:</td>
-          <td width='50'>.</td>
+          <td width='50' class='blank'>.</td>
           <td><div id="dateSelect" style="float: left;"></div></td>
         </tr>
       </table>
