@@ -37,7 +37,7 @@
         </tr>
         <tr><td colspan='3' class='blank'>.</td></tr>
         <tr>
-          <td class='label'>Days in Grouping**:</td>
+          <td class='label'>Range of Grouping**:</td>
           <td width='50' class='blank'>.</td>
           <td><div id="num_days" style="float: left;"></div></td>
         </tr>
@@ -96,8 +96,10 @@
       var propSelect  = $('#propSelect').MPPropertySelect();
       propSelect.MPPropertySelect('setEvent');
       var dateSelect  = $('#dateSelect').MPDatepicker();
-      var items = function() {return item_list = _.map(arguments, function(item) {return {label: String(item), value: item};})};
-      var bucket_size = $('#num_days').MPSelect({items: items(1,2,7,14,30)});
+      var bucket_size = $('#num_days').MPSelect({items: [{label: 'Daily', value: 1},
+                                                          {label: 'Weekly', value: 7},
+                                                          {label: 'Bi-weekly', value: 14},
+                                                          {label: 'Monthly', value: 30}]});
       bucket_size.val(7);
       var eventGraph  = $('#graph').MPChart({chartType: 'line'});
       var eventTable  = $('#table').MPTable({
