@@ -33,6 +33,7 @@
 
         if (eventName) {
           MP.api.segment(eventName, propName, dateRange).done(function(results) {
+            debugger;
             eventGraph.MPChart('setData', results);
             eventTable.MPTable('setData', results);
           });
