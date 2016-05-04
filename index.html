@@ -5,13 +5,36 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.mxpnl.com/libs/mixpanel-platform/css/reset.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.css">
     <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
+    <style>
+    .mixpanel-platform-select.event_selector_theme {
+        max-width: 51px;
+      }
+    </style>
   </head>
   <body class="mixpanel-platform-body">
     <div class="mixpanel-platform-section">
-      <div id="eventSelect" style="float: left;"></div>
-      <div id="propSelect" style="float: left;"></div>
-      <div id="num_days" style="float: left;"></div>
-      <div id="dateSelect" style="float: right;"></div>
+      <table style='width:919px'>
+        <tr>
+          <td width='450' style='text-align:right'>Event:</td>
+          <td width='50'>.</td>
+          <td><div id="eventSelect" style="float: left;"></div></td>
+        </tr>
+        <tr>
+          <td style='text-align:right'>Grouping:</td>
+          <td width='50'>.</td>
+          <td><div id="propSelect" style="float: left;"></div></td>
+        </tr>
+        <tr>
+          <td style='text-align:right'>Number of Days:</td>
+          <td width='50'>.</td>
+          <td><div id="num_days" style="float: left;"></div></td>
+        </tr>
+        <tr>
+          <td style='text-align:right'>Date Range:</td>
+          <td width='50'>.</td>
+          <td><div id="dateSelect" style="float: left;"></div></td>
+        </tr>
+      </table>
       <div style="clear: both;"></div>
       <div id="graph"></div>
     </div>
