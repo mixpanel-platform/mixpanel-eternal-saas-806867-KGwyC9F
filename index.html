@@ -12,31 +12,38 @@
     .blank {
       color: #f0f2f6;
     }
+    .label {
+      text-align: right;
+      font-weight: 500;
+    }
+    .mp_chart_row_label {
+      width: 65px !important;
+    }
     </style>
   </head>
   <body class="mixpanel-platform-body">
     <div class="mixpanel-platform-section" style='width:919px'>
       <table style='width:919px'>
         <tr>
-          <td width='150' style='text-align:right'>Event:</td>
+          <td width='150' class='label'>Activity Event:</td>
           <td width='50' class='blank'>.</td>
           <td><div id="eventSelect" style="float: left;"></div></td>
         </tr>
         <tr><td colspan='3' class='blank'>.</td></tr>
         <tr>
-          <td style='text-align:right'>Grouping:</td>
+          <td class='label'>Type of Grouping:</td>
           <td width='50' class='blank'>.</td>
           <td><div id="propSelect" style="float: left;"></div></td>
         </tr>
         <tr><td colspan='3' class='blank'>.</td></tr>
         <tr>
-          <td style='text-align:right'>Number of Days:</td>
+          <td class='label'>Days in Grouping**:</td>
           <td width='50' class='blank'>.</td>
           <td><div id="num_days" style="float: left;"></div></td>
         </tr>
         <tr><td colspan='3' class='blank'>.</td></tr>
         <tr>
-          <td style='text-align:right'>Date Range:</td>
+          <td class='label'>Date Range**:</td>
           <td width='50' class='blank'>.</td>
           <td><div id="dateSelect" style="float: left;"></div></td>
         </tr>
@@ -46,21 +53,26 @@
     </div>
     <div id="table"></div>
     <script id='query'>
-      function getBeginningOfBucket(epoch) {
-        var today_in_parts = params.to_date.split('-');
-        var bucket = new Date(Number(today_in_parts[0]), Number(today_in_parts[1]) - 1, Number(today_in_parts[2]) + 1).valueOf();
-        while (epoch < bucket)
-          bucket -= params.num_days * 24 * 60 * 60 * 1000;
-        return new Date(bucket).toISOString().slice(0, -14);
-      }
-
       function main() {
-        if (params.grouping == 'distinct_id') {
+        var getBeginningOfBucket = function(epoch) {
+          var today_in_parts = params.to_date.split('-');
+          var bucket = new Date(Number(today_in_parts[0]), Number(today_in_parts[1]) - 1, Number(today_in_parts[2]) + 1).valueOf();
+          while (epoch < bucket)
+            bucket -= params.num_days * 24 * 60 * 60 * 1000;
+          return new Date(bucket).toISOString().slice(0, -14);
+        };
+        var bad_events = {"$campaign_delivery":true,"$campaign_marked_spam":true,"$campaign_bounced":true,"$campaign_open":true,"$experiment_started":true,"$show_survey":true};
+        var event_selectors = [];
+        if (params.event_name) {
+          event_selectors.push({'event': params.event_name});
+        }
+        if (!params.grouping || params.grouping == 'distinct_id') {
           return Events({
             from_date: params.from_date,
             to_date: params.to_date,
-            event_selectors: [{event: params.event_name}]
+            event_selectors: event_selectors
           })
+          .filter(item => !bad_events[item.name])
           .groupByUser([item => getBeginningOfBucket(item.time)], (accums, items) => true)
           .groupBy([item => item.key[1]], mixpanel.reducer.count());
         }
@@ -68,10 +80,11 @@
           return Events({
             from_date: params.from_date,
             to_date: params.to_date,
-            event_selectors: [{event: params.event_name}]
+            event_selectors: event_selectors
           })
+          .filter(item => !bad_events[item.name] && item.properties[params.grouping])
           .groupBy([
-            item => item.properties[params.grouping]? item.properties[params.grouping] : 'No Value',
+            item => item.properties[params.grouping],
             item => getBeginningOfBucket(item.time)
             ], (accums, items) => true)
           .groupBy([item => item.key[1]], mixpanel.reducer.count());
@@ -96,24 +109,22 @@
         var script = document.getElementById('query').innerHTML;
         var params = {
           event_name: eventSelect.MPEventSelect('value'),
-          grouping: propSelect.MPPropertySelect('value')? propSelect.MPPropertySelect('value') : 'distinct_id',
+          grouping: propSelect.MPPropertySelect('value'),
           num_days: bucket_size.MPSelect('value'),
           from_date: dateSelect.MPDatepicker('value').from.toISOString().slice(0, -14),
           to_date: dateSelect.MPDatepicker('value').to.toISOString().slice(0, -14),
         };
-
-        if (params.event_name) {
-          MP.api.jql(script, params).done(function(results) {
-            var res = {};
-            var group = params.grouping == 'distinct_id'? 'Users' : params.grouping;
-            res[group] = {};
-            _.each(results, function(item) {
-              res[group][item.key[0]] = item.value;
-            });
-            eventGraph.MPChart('setData', res);
-            eventTable.MPTable('setData', res);
+        MP.api.jql(script, params).done(function(results) {
+          var res = {};
+          var group = params.grouping == 'distinct_id' || !params.grouping? 'Users' : params.grouping;
+          res[group] = {};
+          _.each(results, function(item) {
+            res[group][item.key[0]] = item.value;
           });
-        }
+          var table_res = res[group];
+          eventGraph.MPChart('setData', res);
+          eventTable.MPTable('setData', table_res);
+        });
       };
       eventSelect.on('change', function(e, eventName) {
         propSelect.MPPropertySelect('setEvent', eventName);
@@ -122,6 +133,9 @@
       propSelect.on('change', runQuery);
       dateSelect.on('change', runQuery);
       bucket_size.on('change', function(e, selection) {runQuery();});
+      $(document).ready(function() {
+         runQuery();
+      });
     </script>
   </body>
 </html>
