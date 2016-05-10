@@ -135,10 +135,9 @@
           event_list.unshift({label: 'All Events', value: undefined});
           property = $('#propSelect').MPSelect({items: props});
           property.on('change', function() {runQuery();});
-          debugger;
           eventSelect = $('#eventSelect').MPSelect({items: event_list});
           eventSelect.on('change', function() {runQuery();});
-          setTimeout(function() {runQuery();}, 1000);
+          runQuery();
         });
       });
     </script>
